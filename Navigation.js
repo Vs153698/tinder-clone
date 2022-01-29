@@ -11,10 +11,10 @@ export default function RootNavigation() {
         headerShown: false,
     };
 
-    const { user } = useAuth()
+    const { Currentuser } = useAuth()
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={user ? "Home" : "loginscreen"} screenOptions={screenOptions}>
+            <Stack.Navigator initialRouteName={Currentuser ? "Home" : "loginscreen"} screenOptions={screenOptions}>
                 <Stack.Screen name='Home' component={Home} />
                 <Stack.Screen name='chatscreen' component={ChatScreen} />
                 <Stack.Screen name='loginscreen' component={LoginScreen} />
