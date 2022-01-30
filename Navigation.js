@@ -13,12 +13,17 @@ export default function RootNavigation() {
 
     const { Currentuser } = useAuth()
     return (
-        <NavigationContainer>
-            <Stack.Navigator initialRouteName={Currentuser ? "Home" : "loginscreen"} screenOptions={screenOptions}>
-                <Stack.Screen name='Home' component={Home} />
-                <Stack.Screen name='chatscreen' component={ChatScreen} />
-                <Stack.Screen name='loginscreen' component={LoginScreen} />
+        <NavigationContainer >
+            <Stack.Navigator screenOptions={screenOptions}  >
+                {Currentuser ? (
+                    <>
+                        <Stack.Screen name='Home' component={Home} />
+                        <Stack.Screen name='chatscreen' component={ChatScreen} />
+                    </>
+                ) :
+                    (<Stack.Screen name='loginscreen' component={LoginScreen} />)}
             </Stack.Navigator>
+
         </NavigationContainer>
 
 
