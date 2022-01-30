@@ -1,11 +1,13 @@
-import { Button, Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React from 'react';
+import { Image, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import tw from 'tailwind-react-native-classnames';
 import * as Application from 'expo-application';
 import useAuth from '../hooks/useAuth';
 import { AntDesign, Entypo, Ionicons } from '@expo/vector-icons';
 import Swiper from 'react-native-deck-swiper'
 import LottieView from 'lottie-react-native';
+import { collection, doc, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
 const DUMMY_DATA = [
   {
     displayName: 'John Doe',
@@ -38,8 +40,30 @@ const DUMMY_DATA = [
   },
 ]
 const Home = ({ navigation }) => {
+  const swipeRef = useRef(null);
+  const [profiles, setProfiles] = useState([]);
   console.log(Application.applicationId);
   const { Currentuser, logout } = useAuth();
+  useLayoutEffect(() =>onSnapshot(doc(db, 'users', Currentuser.uid), (snapshot) => {
+      if (!snapshot.exists()) {
+        navigation.navigate('modalScreen')
+      }
+    })
+ , []);
+ useEffect(() => {
+   let unsub;
+   const fetchcards = async()=>{
+     unsub = onSnapshot( collection(db,'users'), (snapshot) => {
+       const data = snapshot.docs.map(doc => ({ id: doc.id,...doc.data()}))
+       setProfiles(data.filter((profile)=>profile.id !== Currentuser.uid))
+     })
+   }
+   fetchcards()
+   return unsub;
+ }, []);
+ 
+
+
   return (
     <SafeAreaView style={{ flex: 1, marginTop: StatusBar.currentHeight + 4 }} >
       {/* Header started  */}
@@ -47,7 +71,7 @@ const Home = ({ navigation }) => {
         <TouchableOpacity activeOpacity={0.6} onPress={logout}>
           <Image style={tw`h-10 w-10 rounded-full `} source={{ uri: Currentuser?.photoURL }} />
         </TouchableOpacity>
-        <TouchableOpacity activeOpacity={0.6}>
+        <TouchableOpacity onPress={() => navigation.navigate("modalScreen")} activeOpacity={0.6}>
           <Image source={require("../assets/logo2.png")} style={tw`h-14 w-14 `} />
         </TouchableOpacity>
         <TouchableOpacity activeOpacity={0.6} onPress={() => navigation.navigate("chatscreen")} >
@@ -56,10 +80,10 @@ const Home = ({ navigation }) => {
       </View>
       {/* End of header  */}
       {/* Swiper started  */}
-      <View style={tw`flex-1 -mt-6`}>
-        <Swiper overlayLabels={{
+      <View style={tw`flex-1 -mt-6 `}>
+        <Swiper ref={swipeRef} overlayLabels={{
           left: {
-            element: <LottieView source={require('../assets/animations/rejected.json')} speed={0.7} autoPlay loop style={{ height: 100, width: 100 }} />,
+            element: <LottieView source={require('../assets/animations/rejected.json')} autoPlay loop style={{ height: 100, width: 100 }} />,
             style: {
               wrapper: {
                 padding: 10,
@@ -70,7 +94,7 @@ const Home = ({ navigation }) => {
             }
           },
           right: {
-            element: <LottieView source={require('../assets/animations/accept.json')} speed={0.7} autoPlay loop style={{ height: 100, width: 100 }} />,
+            element: <LottieView source={require('../assets/animations/accept.json')} autoPlay loop style={{ height: 100, width: 100 }} />,
             style: {
               wrapper: {
                 padding: 10,
@@ -80,18 +104,31 @@ const Home = ({ navigation }) => {
               }
             }
           },
-        }} onSwipedLeft={() => console.log("rejected ")} onSwipedRight={() => console.log("accept")} stackSize={5} animateCardOpacity cardIndex={0} verticalSwipe={false} containerStyle={{ backgroundColor: "transparent" }} cards={DUMMY_DATA} renderCard={(card) => (
-          <View key={card.id} style={tw` bg-white h-3/4 rounded-xl relative`}>
-            <Image source={{ uri: card.photoURL }} style={tw`absolute top-0 h-full w-full rounded-xl `} />
+        }} onSwipedLeft={() => console.log("rejected ")} onSwipedRight={() => console.log("accept")} stackSize={5} animateCardOpacity cardIndex={0} verticalSwipe={false} containerStyle={{ backgroundColor: "transparent" }} cards={profiles} renderCard={(card) => card ? (
+          <View key={card?.id} style={tw` bg-white h-3/4 rounded-xl relative`}>
+            <Image source={{ uri: card?.photoURL }} style={tw`absolute top-0 h-full w-full rounded-xl `} />
             <View style={[tw`absolute bottom-0 bg-white w-full flex-row h-20 justify-between items-center px-5 rounded-b-xl`, styles.cardShadow]}>
               <View>
-                <Text style={tw`text-xl font-bold`}>{card.displayName}</Text>
-                <Text>{card.job}</Text>
+                <Text style={tw`text-xl font-bold`}>{card?.displayName}</Text>
+                <Text>{card?.job}</Text>
               </View>
-              <Text style={tw`text-2xl font-bold`}>{card.age}</Text>
+              <Text style={tw`text-2xl font-bold`}>{card?.age}</Text>
             </View>
           </View>
+        ) : (
+          <View style={[tw`relative bg-white h-3/4 rounded-xl justify-center items-center`, styles.cardShadow]}>
+            <Text style={tw`font-bold pb-5 text-2xl`}>No More Profiles !</Text>
+            <Image style={tw`h-20 w-20`} height={100} width={100} source={{ uri: "https://links.papareact.com/6gb" }} />
+          </View>
         )} />
+      </View>
+      <View style={tw`flex flex-row justify-evenly mb-6`}>
+        <TouchableOpacity onPress={() => swipeRef.current.swipeLeft()} style={tw`items-center justify-center rounded-full w-16 h-16 bg-red-200`} activeOpacity={0.6}>
+          <Entypo name="cross" size={25} color="red" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => swipeRef.current.swipeRight()} style={tw`items-center justify-center rounded-full w-16 h-16 bg-green-200`} activeOpacity={0.6}>
+          <Entypo name="heart" size={25} color="green" />
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

@@ -4,6 +4,7 @@ import useAuth from "./hooks/useAuth";
 import ChatScreen from "./Screens/ChatScreen";
 import Home from "./Screens/Home";
 import LoginScreen from "./Screens/LoginScreen";
+import ModelScreen from "./Screens/ModelScreen";
 
 export default function RootNavigation() {
     const Stack = createStackNavigator();
@@ -17,8 +18,13 @@ export default function RootNavigation() {
             <Stack.Navigator screenOptions={screenOptions}  >
                 {Currentuser ? (
                     <>
+                    <Stack.Group>
                         <Stack.Screen name='Home' component={Home} />
                         <Stack.Screen name='chatscreen' component={ChatScreen} />
+                    </Stack.Group>
+                    <Stack.Group screenOptions={{presentation:'modal'}}>
+                        <Stack.Screen name='modalScreen' component={ModelScreen} />
+                    </Stack.Group>
                     </>
                 ) :
                     (<Stack.Screen name='loginscreen' component={LoginScreen} />)}
