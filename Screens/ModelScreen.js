@@ -12,12 +12,12 @@ import LottieView from 'lottie-react-native';
 
 const ModelScreen = ({ navigation, route }) => {
 
-    const selfdata = route.params.selfUser[0];
+    const selfdata = route?.params?.selfUser[0];
     const { Currentuser } = useAuth();
-    const [image, setImage] = useState(selfdata.photoURL ? selfdata.photoURL : null);
+    const [image, setImage] = useState(selfdata?.photoURL ? selfdata?.photoURL : null);
     const [loading, setLoading] = useState(false);
-    const [job, setJob] = useState(selfdata.job ? selfdata.job : null);
-    const [age, setAge] = useState(selfdata.age ? selfdata.age : null);
+    const [job, setJob] = useState(selfdata?.job ? selfdata?.job : null);
+    const [age, setAge] = useState(selfdata?.age ? selfdata?.age : null);
     const incompleteform = !image || !job || !age;
     const updateUserProfile = async () => {
         setLoading(true)
@@ -35,7 +35,6 @@ const ModelScreen = ({ navigation, route }) => {
             alert(err.message);
         }).finally(() => setLoading(false))
     }
-    console.log(":firebase data profile", route.params.selfUser[0].photoURL);
 
     async function uploadImageAsync(uri) {
         const blob = await new Promise((resolve, reject) => {

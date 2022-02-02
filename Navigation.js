@@ -4,6 +4,7 @@ import useAuth from "./hooks/useAuth";
 import ChatScreen from "./Screens/ChatScreen";
 import Home from "./Screens/Home";
 import LoginScreen from "./Screens/LoginScreen";
+import MatchedScreen from "./Screens/MatchedScreen";
 import ModelScreen from "./Screens/ModelScreen";
 
 export default function RootNavigation() {
@@ -24,6 +25,9 @@ export default function RootNavigation() {
                     </Stack.Group>
                     <Stack.Group screenOptions={{presentation:'modal'}}>
                         <Stack.Screen name='modalScreen' component={ModelScreen} />
+                    </Stack.Group>
+                    <Stack.Group screenOptions={{presentation:'transparentModal'}}>
+                        <Stack.Screen name='match' component={MatchedScreen} />
                     </Stack.Group>
                     </>
                 ) :
