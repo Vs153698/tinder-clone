@@ -5,6 +5,7 @@ import ChatScreen from "./Screens/ChatScreen";
 import Home from "./Screens/Home";
 import LoginScreen from "./Screens/LoginScreen";
 import MatchedScreen from "./Screens/MatchedScreen";
+import MessageScreen from "./Screens/MessageScreen";
 import ModelScreen from "./Screens/ModelScreen";
 
 export default function RootNavigation() {
@@ -22,6 +23,7 @@ export default function RootNavigation() {
                     <Stack.Group>
                         <Stack.Screen name='Home' component={Home} />
                         <Stack.Screen name='chatscreen' component={ChatScreen} />
+                        <Stack.Screen name='messagescreen' component={MessageScreen} />
                     </Stack.Group>
                     <Stack.Group screenOptions={{presentation:'modal'}}>
                         <Stack.Screen name='modalScreen' component={ModelScreen} />

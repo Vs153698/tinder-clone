@@ -1,11 +1,16 @@
-import { View, Text } from 'react-native';
+import { View, Text, SafeAreaView, StatusBar } from 'react-native';
 import React from 'react';
 import tw from 'tailwind-react-native-classnames';
-const ChatScreen = () => {
+import Header from '../components/Header';
+import ChatList from '../components/ChatList';
+
+const ChatScreen = ({navigation}) => {
   return (
-    <View style={tw`flex-1 justify-center items-center bg-green-500`}>
-    <Text>Chat Screen</Text>
-  </View>
+    <SafeAreaView style={{flex:1,marginTop:StatusBar.currentHeight + 2}}>
+      <Header title="Chat" navigation={navigation} />
+      <ChatList navigation={navigation}/>
+    
+  </SafeAreaView>
   );
 };
 
